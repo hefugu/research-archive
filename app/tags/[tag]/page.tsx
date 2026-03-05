@@ -48,6 +48,7 @@ export default function TagPage({ params }: Props) {
             id={p.id}
             title={p.title}
             year={p.year}
+            author={p.author}
             abstract={p.abstract}
             tags={p.tags ?? []}
           />

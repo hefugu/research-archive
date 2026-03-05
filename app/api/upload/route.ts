@@ -14,8 +14,16 @@ export async function POST(req: Request) {
   const file = form.get("file") as File
 
   if (!file) {
-    return Response.json({ error: "ファイルなし" })
+    return Response.json({ error: "ファイルなし" }, { status: 400 })
   }
+
+  // MIMEチェック
+  if (file.type !== "application/pdf") {
+    return Response.json({ error: "PDFのみアップロード可能です" }, { status: 400 })
+  }
+
+  // ファイル名サニタイズ
+  const safeName = file.name.replace(/[^a-zA-Z0-9_.-]/g, "_")
 
   // PDF保存
   const bytes = await file.arrayBuffer()
@@ -24,7 +32,7 @@ export async function POST(req: Request) {
   const pdfPath = path.join(
     process.cwd(),
     "public/pdf",
-    file.name
+    safeName
   )
 
   await writeFile(pdfPath, buffer)
@@ -47,7 +55,7 @@ export async function POST(req: Request) {
     year,
     tags: [],
     abstract,
-    pdf: `/pdf/${file.name}`
+    pdf: `/pdf/${safeName}`
   }
 
   projects.push(newProject)
