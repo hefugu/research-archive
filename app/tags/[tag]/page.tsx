@@ -1,5 +1,6 @@
-import { projects } from "../../../data/projects"
+import projects from "../../../data/projects.json"
 import ProjectCard from "../../../components/ProjectCard"
+import Link from "next/link"
 
 type Props = {
   params: {
@@ -9,28 +10,49 @@ type Props = {
 
 export default function TagPage({ params }: Props) {
 
-  const filtered = projects.filter((p) =>
-    p.tags.includes(params.tag)
+  const tag = decodeURIComponent(params.tag)
+
+  const filtered = projects.filter((p: any) =>
+    (p.tags ?? []).includes(tag)
   )
 
   return (
-    <main className="p-10 max-w-5xl mx-auto">
+    <main className="p-10 max-w-6xl mx-auto">
 
-      <h1 className="text-3xl font-bold mb-6">
-        タグ: {params.tag}
-      </h1>
+      <div className="flex items-center justify-between mb-8">
 
-      <div className="grid grid-cols-2 gap-4">
-        {filtered.map((p) => (
+        <h1 className="text-3xl font-bold">
+          タグ: {tag}
+        </h1>
+
+        <Link
+          href="/"
+          className="text-blue-600 hover:underline"
+        >
+          ホームへ戻る
+        </Link>
+
+      </div>
+
+      {filtered.length === 0 && (
+        <p className="text-gray-500">
+          このタグの研究はまだありません
+        </p>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+        {filtered.map((p: any) => (
           <ProjectCard
             key={p.id}
             id={p.id}
             title={p.title}
             year={p.year}
             abstract={p.abstract}
-            tags={p.tags}
+            tags={p.tags ?? []}
           />
         ))}
+
       </div>
 
     </main>
